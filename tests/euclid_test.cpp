@@ -109,6 +109,9 @@ TEST_CASE("geometry_min_max_coexist_with_scalar_min_max") {
         CHECK(evaluate(installed(scalar_first), "Box2D {min: Point2D {x: 1.0, y: 2.0}, "
                                                 "max: Point2D {x: 5.0, y: 6.0}}.max.y")
                   .as<double>() == 6.0);
+        CHECK(evaluate(installed(scalar_first), "max(Box2D {min: Point2D {x: 1.0, y: 2.0}, "
+                                                "max: Point2D {x: 5.0, y: 6.0}}).y")
+                  .as<double>() == 6.0);
     }
 }
 
@@ -185,6 +188,8 @@ TEST_CASE("all non-transform non-checked signatures match representative values"
         {"center", {b}, "Point2D {x: 3.0, y: 5.0}"},
         {"dot", {v, v}, "25.0"},
         {"cross", {v, v}, "0.0"},
+        {"cross", {v, "Vector2D {x: 1.0, y: 2.0}"}, "2.0"},
+        {"cross", {"Vector2D {x: 1.0, y: 2.0}", v}, "-2.0"},
         {"square_length", {v}, "25.0"},
         {"length", {v}, "5.0"},
         {"distance_to", {p, q}, "5.0"},
@@ -282,6 +287,14 @@ TEST_CASE("equality and finite inspect every nominal record component") {
     cel::parser parser(installed());
     cel::raw_stack stack;
     CHECK_THROWS_AS(parser.parse_str("is_finite(true)"), cel::parse_error);
+    for (const auto& operation : {" == ", " != "}) {
+        CHECK_THROWS_AS(parser.parse_str(records[0].first + operation + records[1].first),
+                        cel::parse_error);
+        CHECK_THROWS_AS(parser.parse_str(records[1].first + operation + records[0].first),
+                        cel::parse_error);
+        CHECK_THROWS_AS(parser.parse_str(records[1].first + operation + records[2].first),
+                        cel::parse_error);
+    }
     for (const auto& [record, count] : records) {
         CAPTURE(record);
         CHECK(parser.parse_str(record + " == " + record).execute(stack, {}).as<bool>());
@@ -356,4 +369,119 @@ TEST_CASE("ordinary bounds retain reversed empty nonfinite and signed-zero behav
                 "contains_rect(Rect {origin: Point2D {x: 1.0, y: 1.0}, size: Size2D {width: 1.0, height: 1.0}}, Rect {origin: Point2D {x: 9.0, y: 9.0}, size: Size2D {width: 0.0, height: 1.0}})")
             .execute(stack, {})
             .as<bool>());
+}
+
+TEST_CASE("rectangle and box edge operations follow Euclid for empty reversed NaN and infinity") {
+    const std::string r = "Rect {origin: Point2D {x: 0.0, y: 0.0}, "
+                          "size: Size2D {width: 2.0, height: 2.0}}";
+    const std::string rempty = "Rect {origin: Point2D {x: 9.0, y: 9.0}, "
+                               "size: Size2D {width: 0.0, height: 1.0}}";
+    const std::string rreverse = "Rect {origin: Point2D {x: 3.0, y: 0.0}, "
+                                 "size: Size2D {width: -3.0, height: 2.0}}";
+    const std::string rwide = "Rect {origin: Point2D {x: -1.0, y: -1.0}, "
+                              "size: Size2D {width: 5.0, height: 5.0}}";
+    const std::string rnan = "Rect {origin: Point2D {x: 1.0, y: 1.0}, "
+                             "size: Size2D {width: 0.0 / 0.0, height: 1.0}}";
+    const std::string rnanorigin = "Rect {origin: Point2D {x: 0.0 / 0.0, y: 1.0}, "
+                                   "size: Size2D {width: 1.0, height: 1.0}}";
+    const std::string rinf = "Rect {origin: Point2D {x: 0.0, y: 0.0}, "
+                             "size: Size2D {width: 1.0 / 0.0, height: 2.0}}";
+    const std::string b = "Box2D {min: Point2D {x: 0.0, y: 0.0}, "
+                          "max: Point2D {x: 2.0, y: 2.0}}";
+    const std::string bempty = "Box2D {min: Point2D {x: 9.0, y: 9.0}, "
+                               "max: Point2D {x: 9.0, y: 10.0}}";
+    const std::string breverse = "Box2D {min: Point2D {x: 3.0, y: 0.0}, "
+                                 "max: Point2D {x: 0.0, y: 2.0}}";
+    const std::string bnan = "Box2D {min: Point2D {x: 0.0 / 0.0, y: 1.0}, "
+                             "max: Point2D {x: 1.0, y: 2.0}}";
+    const std::string bnan2 = "Box2D {min: Point2D {x: 0.0, y: 3.0}, "
+                              "max: Point2D {x: 0.0 / 0.0, y: 4.0}}";
+    const std::string binf = "Box2D {min: Point2D {x: -1.0 / 0.0, y: 0.0}, "
+                             "max: Point2D {x: 1.0 / 0.0, y: 2.0}}";
+    const std::string pinf = "Point2D {x: 1.0 / 0.0, y: 1.0}";
+    const std::string p = "Point2D {x: 1.0, y: 1.0}";
+    const std::vector<std::pair<std::string, bool>> cases{
+        {"contains_rect(" + r + ", " + rempty + ")", true},
+        {"contains_rect(" + rempty + ", " + r + ")", false},
+        {"union(" + rempty + ", " + r + ") == " + r, true},
+        {"union(" + r + ", " + rempty + ") == " + r, true},
+        {"union(" + rempty + ", " + rreverse + ") == " + rempty, true},
+        {"intersects(" + rreverse + ", " + rwide + ")", true},
+        {"contains_rect(" + r + ", " + rreverse + ")", true},
+        {"union(" + rreverse + ", " + r + ") == " + r, true},
+        {"contains_rect(" + r + ", " + rnan + ")", true},
+        {"contains_rect(" + r + ", " + rnanorigin + ")", false},
+        {"intersects(" + rnan + ", " + r + ")", false},
+        {"union(" + rnan + ", " + r + ") == " + r, true},
+        {"union(" + r + ", " + rnan + ") == " + r, true},
+        {"union(" + rnanorigin + ", " + r + ") == " + r, true},
+        {"contains(" + rinf + ", " + p + ")", true},
+        {"contains(" + rinf + ", " + pinf + ")", false},
+        {"intersects(" + rinf + ", " + r + ")", true},
+        {"union(" + rinf + ", " + r + ") == " + rinf, true},
+        {"contains_box(" + b + ", " + bempty + ")", true},
+        {"contains_box(" + bempty + ", " + b + ")", false},
+        {"union(" + bempty + ", " + b + ") == " + b, true},
+        {"union(" + b + ", " + bempty + ") == " + b, true},
+        {"union(" + bempty + ", " + breverse + ") == " + bempty, true},
+        {"contains_box(" + b + ", " + bnan + ")", true},
+        {"contains_box(" + bnan + ", " + b + ")", false},
+        {"intersects(" + bnan + ", " + b + ")", false},
+        {"contains(" + binf + ", " + p + ")", true},
+        {"contains(" + binf + ", " + pinf + ")", false},
+        {"intersects(" + binf + ", " + b + ")", true},
+        {"union(" + binf + ", " + b + ") == " + binf, true},
+        {"union(" + b + ", " + binf + ") == " + binf, true}};
+    cel::parser parser(installed());
+    cel::raw_stack stack;
+    for (const auto& [expression, expected] : cases) {
+        CAPTURE(expression);
+        CHECK(parser.parse_str(expression).execute(stack, {}).as<bool>() == expected);
+    }
+    CHECK(parser.parse_str("union(" + bnan + ", " + bnan2 + ").min.y")
+              .execute(stack, {})
+              .as<double>() == 1.0);
+    CHECK(parser.parse_str("union(" + bnan2 + ", " + bnan + ").min.y")
+              .execute(stack, {})
+              .as<double>() == 3.0);
+    CHECK(parser.parse_str("union(" + rnan + ", " + rnanorigin + ").origin.x")
+              .execute(stack, {})
+              .as<double>() == 1.0);
+    CHECK(std::isnan(parser.parse_str("union(" + rnanorigin + ", " + rnan + ").origin.x")
+                         .execute(stack, {})
+                         .as<double>()));
+    const auto unbounded = parser.parse_str("to_rect(" + binf + ")").execute(stack, {});
+    CHECK(std::isinf(unbounded.field("origin").field("x").as<double>()));
+    CHECK(std::signbit(unbounded.field("origin").field("x").as<double>()));
+    CHECK(std::isinf(unbounded.field("size").field("width").as<double>()));
+    CHECK(std::isnan(
+        parser.parse_str("to_box2d(to_rect(" + binf + ")).max.x").execute(stack, {}).as<double>()));
+}
+
+TEST_CASE("union preserves the first signed-zero endpoint on ties") {
+    const std::string min_negative = "Box2D {min: Point2D {x: -0.0, y: 0.0}, "
+                                     "max: Point2D {x: 1.0, y: 1.0}}";
+    const std::string min_positive = "Box2D {min: Point2D {x: 0.0, y: 0.0}, "
+                                     "max: Point2D {x: 2.0, y: 1.0}}";
+    const std::string max_negative = "Box2D {min: Point2D {x: -2.0, y: 0.0}, "
+                                     "max: Point2D {x: -0.0, y: 1.0}}";
+    const std::string max_positive = "Box2D {min: Point2D {x: -1.0, y: 0.0}, "
+                                     "max: Point2D {x: 0.0, y: 1.0}}";
+    const std::string rect_negative = "Rect {origin: Point2D {x: -0.0, y: 0.0}, "
+                                      "size: Size2D {width: 1.0, height: 1.0}}";
+    const std::string rect_positive = "Rect {origin: Point2D {x: 0.0, y: 0.0}, "
+                                      "size: Size2D {width: 2.0, height: 1.0}}";
+    cel::parser parser(installed());
+    cel::raw_stack stack;
+    const auto component = [&](const std::string& a, const std::string& b, const char* field) {
+        return parser.parse_str("union(" + a + ", " + b + ")." + field + ".x")
+            .execute(stack, {})
+            .as<double>();
+    };
+    CHECK(std::signbit(component(min_negative, min_positive, "min")));
+    CHECK_FALSE(std::signbit(component(min_positive, min_negative, "min")));
+    CHECK(std::signbit(component(max_negative, max_positive, "max")));
+    CHECK_FALSE(std::signbit(component(max_positive, max_negative, "max")));
+    CHECK(std::signbit(component(rect_negative, rect_positive, "origin")));
+    CHECK_FALSE(std::signbit(component(rect_positive, rect_negative, "origin")));
 }

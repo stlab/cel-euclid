@@ -52,10 +52,17 @@ struct transform2d {
 void install(op_lookup& lookup);
 } // namespace euclid
 
-/// Provides canonical named-record conversion for a CEL Euclid carrier.
-///
-/// Example: `cel::value::from(cel::euclid::point2d{{1.0, 2.0}})`.
 #define CEL_EUCLID_ADAPTER(TYPE)                                                                 \
+    /** Provides canonical named-record conversion for a CEL Euclid carrier.                     \
+     *                                                                                           \
+     * Example using the point adapter:                                                          \
+     * \code                                                                                     \
+     * using adapter = cel::record_adapter<cel::euclid::point2d>;                                \
+     * auto schema = adapter::type();                                                            \
+     * auto record = adapter::to_value(cel::euclid::point2d{{1.0, 2.0}});                        \
+     * auto point = adapter::from_value(record);                                                 \
+     * \endcode                                                                                  \
+     */                                                                                          \
     template <>                                                                                  \
     struct record_adapter<euclid::TYPE> {                                                        \
         /** Returns the complete nominal record descriptor. */                                   \
