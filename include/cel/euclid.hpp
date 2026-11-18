@@ -41,7 +41,11 @@ struct transform2d {
     glm::dmat3x2 value;
 };
 
-/// Installs the non-transform geometry schemas and operations into a lookup.
+/// Installs the geometry schemas and operations into a lookup.
+///
+/// `a.then(b)` applies `a` first. Checked normalization, inversion, and
+/// outer bounds throw source-located evaluation errors for invalid results.
+/// Outer bounds enclose mapped corners, not the transformed shape's interior.
 ///
 /// \pre The lookup has none of the seven record names or installed signatures.
 /// Registration failure can leave the lookup partially modified.

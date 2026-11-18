@@ -15,9 +15,11 @@ cel::parser parser(std::move(lookup));
 
 Records use named fields, including nested `Rect` and `Box2D` fields. The
 library registers equality and finite checks for all seven geometry records.
-Non-transform operations include point and vector arithmetic, bounds,
-containment, and angle conversions. Checked operations and transform operations
-are not included.
+Operations include point and vector arithmetic, bounds, containment, angle
+conversions, and affine transforms. `a.then(b)` applies `a` first. The checked
+`normalize`, `inverse`, and `outer_transformed_rect` operations report
+unrepresentable results as evaluation errors. Outer bounds enclose the
+transformed corners; they do not establish containment in the transformed shape.
 
 To build and test from a checkout:
 

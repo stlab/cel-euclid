@@ -13,7 +13,7 @@ option(CEL_INSTALL "Enable installation for CEL libraries" ${PROJECT_IS_TOP_LEVE
 CPMAddPackage(NAME cel-runtime GITHUB_REPOSITORY stlab/cel-runtime
     GIT_TAG e67c9d5793367b7f5b6f0deaba1ca43b57e40933)
 CPMAddPackage(NAME cel-parser GITHUB_REPOSITORY stlab/cel-parser
-    GIT_TAG 94e67353044d79706a9922070351edfc30b34414)
+    GIT_TAG 5c8b676d8ffab9e4b6038d948b6146a17d2136de)
 CPMAddPackage(NAME glm GITHUB_REPOSITORY g-truc/glm
     GIT_TAG 8d1fd52e5ab5590e2c81768ace50c72bae28f2ed
     OPTIONS "GLM_BUILD_INSTALL ${CEL_INSTALL}")
@@ -27,8 +27,8 @@ cpp_library_setup(
     NAMESPACE cel
     REQUIRES_CPP_VERSION 20
     HEADERS euclid.hpp
-    SOURCES euclid.cpp geometry.cpp
-    TESTS euclid_test.cpp
+    SOURCES euclid.cpp geometry.cpp transforms.cpp
+    TESTS euclid_test.cpp transforms_test.cpp
 )
 cpp_library_map_dependency("cel::parser" "cel-parser CONFIG")
 cpp_library_map_dependency("glm::glm" "glm CONFIG")
@@ -44,4 +44,7 @@ if(CEL_INSTALL)
 endif()
 if(TARGET euclid_test)
     target_link_libraries(euclid_test PRIVATE cel::std)
+endif()
+if(TARGET transforms_test)
+    target_link_libraries(transforms_test PRIVATE cel::std)
 endif()
