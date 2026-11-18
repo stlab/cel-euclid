@@ -33,6 +33,11 @@ cpp_library_setup(
 cpp_library_map_dependency("cel::parser" "cel-parser CONFIG")
 cpp_library_map_dependency("glm::glm" "glm CONFIG")
 target_link_libraries(euclid PUBLIC cel::parser glm::glm)
+if(MSVC)
+    target_compile_options(euclid PRIVATE /fp:strict)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "^(AppleClang|Clang|GNU)$")
+    target_compile_options(euclid PRIVATE -ffp-contract=off)
+endif()
 if(CEL_INSTALL)
     install(FILES LICENSE licenses/GLM-LICENSE.txt licenses/CPM-MIT.txt
         DESTINATION "${CMAKE_INSTALL_DATADIR}/licenses/cel-euclid")

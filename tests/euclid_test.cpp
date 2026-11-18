@@ -81,6 +81,15 @@ TEST_CASE("point_vector_and_size_arithmetic_match_rust") {
           6.0);
 }
 
+TEST_CASE("dot product rounds products separately before addition") {
+    const auto result =
+        evaluate(installed(), "dot(Vector2D {x: 1.000000007450580596923828125, y: 1.0}, "
+                              "Vector2D {x: 0.999999992549419403076171875, y: -1.0})")
+            .as<double>();
+    CHECK(result == 0.0);
+    CHECK_FALSE(std::signbit(result));
+}
+
 TEST_CASE("rect_and_box_boundaries_match_rust") {
     auto lookup = installed();
     cel::parser parser(std::move(lookup));
