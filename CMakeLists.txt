@@ -29,6 +29,14 @@ cpp_library_setup(
     HEADERS euclid.hpp
     SOURCES euclid.cpp geometry.cpp transforms.cpp
     TESTS euclid_test.cpp transforms_test.cpp
+    EXAMPLES example.cpp
+    DOCS_INPUTS README.md docs/tutorial.md docs/reference.md
+    DOCS_OPTIONS
+        "USE_MDFILE_AS_MAINPAGE = ${CMAKE_CURRENT_SOURCE_DIR}/README.md"
+        "EXCLUDE_SYMBOLS = cel::op_lookup CEL_EUCLID_ADAPTER"
+        "WARN_AS_ERROR = YES"
+        "FULL_PATH_NAMES = NO"
+        "STRIP_FROM_INC_PATH = ${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 cpp_library_map_dependency("cel::parser" "cel-parser CONFIG")
 cpp_library_map_dependency("glm::glm" "glm CONFIG")
