@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: BSL-1.0
+#include <algorithm>
 #include <array>
 #include <cel/euclid.hpp>
 #include <cel/parser/compiler.hpp>
@@ -45,8 +46,7 @@ TEST_CASE("record_schemas_match_rust") {
     for (const auto& [name, fields] : schemas) {
         const auto schema = lookup.find_type(name);
         REQUIRE(schema.has_value());
-        CHECK(std::vector<std::string>(schema->field_names().begin(),
-                                       schema->field_names().end()) == fields);
+        CHECK(std::ranges::equal(schema->field_names(), fields));
     }
 }
 

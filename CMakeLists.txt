@@ -13,7 +13,7 @@ option(CEL_INSTALL "Enable installation for CEL libraries" ${PROJECT_IS_TOP_LEVE
 CPMAddPackage(NAME cel-runtime GITHUB_REPOSITORY stlab/cel-runtime
     GIT_TAG e67c9d5793367b7f5b6f0deaba1ca43b57e40933)
 CPMAddPackage(NAME cel-parser GITHUB_REPOSITORY stlab/cel-parser
-    GIT_TAG 5c8b676d8ffab9e4b6038d948b6146a17d2136de)
+    GIT_TAG e090f994c11a0023aee9b894050be62394ebcce9)
 CPMAddPackage(NAME glm GITHUB_REPOSITORY g-truc/glm
     GIT_TAG 8d1fd52e5ab5590e2c81768ace50c72bae28f2ed
     OPTIONS "GLM_BUILD_INSTALL ${CEL_INSTALL}")

@@ -220,7 +220,7 @@ TEST_CASE("inverse_round_trips_points") {
                               ").transform_point(Point2D {x: 1.0, y: 0.0}))")
                          .as<cel::euclid::point2d>();
         CHECK(value.value.x == doctest::Approx(1.0).epsilon(1e-12));
-        CHECK(std::abs(value.value.y) <= 1e-12);
+        CHECK((std::abs(value.value.y) <= 1e-12));
     }
 }
 
@@ -239,10 +239,10 @@ TEST_CASE("inverse_crop_bounds_enclose_all_corners") {
                                    "Point2D {x: -7.0, y: 14.0}", "Point2D {x: 6.0, y: 14.0}"}) {
             const auto p =
                 evaluate(inverse + ".transform_point(" + corner + ")").as<cel::euclid::point2d>();
-            CHECK(p.value.x >= bounds.origin.value.x);
-            CHECK(p.value.x <= bounds.origin.value.x + bounds.size.value.x);
-            CHECK(p.value.y >= bounds.origin.value.y);
-            CHECK(p.value.y <= bounds.origin.value.y + bounds.size.value.y);
+            CHECK((p.value.x >= bounds.origin.value.x));
+            CHECK((p.value.x <= bounds.origin.value.x + bounds.size.value.x));
+            CHECK((p.value.y >= bounds.origin.value.y));
+            CHECK((p.value.y <= bounds.origin.value.y + bounds.size.value.y));
         }
     }
 }
@@ -274,10 +274,10 @@ TEST_CASE("outer_bounds_round_outward_when_extent_subtraction_rounds_inward") {
     for (const auto* c : {"Point2D {x: 0.0, y: 0.0}", "Point2D {x: 1.0, y: 0.0}",
                           "Point2D {x: 0.0, y: 1.0}", "Point2D {x: 1.0, y: 1.0}"}) {
         auto p = evaluate(m + ".transform_point(" + c + ")").as<cel::euclid::point2d>();
-        CHECK(p.value.x >= b.origin.value.x);
-        CHECK(p.value.x <= b.origin.value.x + b.size.value.x);
-        CHECK(p.value.y >= b.origin.value.y);
-        CHECK(p.value.y <= b.origin.value.y + b.size.value.y);
+        CHECK((p.value.x >= b.origin.value.x));
+        CHECK((p.value.x <= b.origin.value.x + b.size.value.x));
+        CHECK((p.value.y >= b.origin.value.y));
+        CHECK((p.value.y <= b.origin.value.y + b.size.value.y));
     }
 }
 
