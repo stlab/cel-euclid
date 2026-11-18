@@ -5,6 +5,16 @@ signatures. See the [Rust geometry reference](https://stlab.github.io/cel-rs/cel
 for individual operation semantics. Operation links in the table point to
 their corresponding Rust entries.
 
+## Floating-point build requirements
+
+Build the library and its consumers with settings that preserve NaNs,
+infinities, and signed zero. Do not enable `-ffast-math`,
+`-ffinite-math-only`, `/fp:fast`, or equivalent assumptions. The public header
+rejects these modes when the compiler exposes their predefined macros;
+individual flags that discard these properties are also unsupported.
+The CMake target disables fused multiply-add contraction in the library
+to preserve Rust's separate rounding of multiplication and addition.
+
 ## Values and records
 
 The C++ language supports `bool` and binary64 `f64`, not integer values.

@@ -21,22 +21,25 @@ if(BUILD_TESTING)
         GIT_TAG 493acb275cc59cdcf802175d07c806aeefed8686)
 endif()
 
+if(MSVC)
+    set(floating_point_tests fast_math_fail.cpp)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "^(AppleClang|Clang|GNU)$")
+    set(floating_point_tests fast_math_fail.cpp finite_math_fail.cpp)
+endif()
+
 cpp_library_setup(
     DESCRIPTION "CEL Euclid geometry"
     NAMESPACE cel
-    REQUIRES_CPP_VERSION 20
     HEADERS euclid.hpp
     SOURCES euclid.cpp geometry.cpp transforms.cpp
-    TESTS euclid_test.cpp transforms_test.cpp
+    TESTS euclid_test.cpp transforms_test.cpp ${floating_point_tests}
     EXAMPLES example.cpp
     DOCS_INPUTS README.md docs/tutorial.md docs/reference.md
+    DOCS_EXCLUDE_SYMBOLS cel::op_lookup CEL_EUCLID_ADAPTER
     DOCS_OPTIONS
         "USE_MDFILE_AS_MAINPAGE = ${CMAKE_CURRENT_SOURCE_DIR}/README.md"
-        "EXCLUDE_SYMBOLS = cel::op_lookup CEL_EUCLID_ADAPTER"
-        "WARN_AS_ERROR = YES"
-        "FULL_PATH_NAMES = NO"
-        "STRIP_FROM_INC_PATH = ${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
+# Keep mappings for source pins, which cpp-library reports as untracked.
 cpp_library_map_dependency("cel::parser" "cel-parser CONFIG")
 cpp_library_map_dependency("glm::glm" "glm CONFIG")
 target_link_libraries(euclid PUBLIC cel::parser glm::glm)
@@ -54,4 +57,12 @@ if(TARGET euclid_test)
 endif()
 if(TARGET transforms_test)
     target_link_libraries(transforms_test PRIVATE cel::std)
+endif()
+if(TARGET fast_math_fail)
+    if(MSVC)
+        target_compile_options(fast_math_fail PRIVATE /fp:fast)
+    else()
+        target_compile_options(fast_math_fail PRIVATE -ffast-math)
+        target_compile_options(finite_math_fail PRIVATE -ffinite-math-only)
+    endif()
 endif()

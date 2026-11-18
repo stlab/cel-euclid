@@ -4,6 +4,12 @@
 #ifndef CEL_EUCLID_HPP
 #define CEL_EUCLID_HPP
 
+#if defined(__FAST_MATH__) || (defined(__FINITE_MATH_ONLY__) && __FINITE_MATH_ONLY__ > 0) || \
+    defined(_M_FP_FAST)
+#error \
+    "cel-euclid requires NaNs, infinities, and signed zero; disable fast-math and finite-only modes."
+#endif
+
 #include <cel/runtime/value.hpp>
 #include <glm/glm.hpp>
 
