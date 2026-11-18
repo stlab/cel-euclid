@@ -10,8 +10,7 @@ project(euclid LANGUAGES CXX)
 include(CTest)
 option(CEL_INSTALL "Enable installation for CEL libraries" ${PROJECT_IS_TOP_LEVEL})
 
-CPMAddPackage(NAME cel-runtime GITHUB_REPOSITORY stlab/cel-runtime
-    GIT_TAG e67c9d5793367b7f5b6f0deaba1ca43b57e40933)
+CPMAddPackage(URI "gh:stlab/cel-runtime@1.1.0" EXCLUDE_FROM_ALL NO)
 CPMAddPackage(NAME cel-parser GITHUB_REPOSITORY stlab/cel-parser
     GIT_TAG e090f994c11a0023aee9b894050be62394ebcce9)
 CPMAddPackage(NAME glm GITHUB_REPOSITORY g-truc/glm
