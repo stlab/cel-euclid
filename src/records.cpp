@@ -1,6 +1,4 @@
 // SPDX-License-Identifier: BSL-1.0
-#ifndef CEL_EUCLID_RECORDS_HPP
-#define CEL_EUCLID_RECORDS_HPP
 #include <array>
 #include <cel/euclid.hpp>
 #include <stdexcept>
@@ -95,4 +93,3 @@ euclid::transform2d record_adapter<euclid::transform2d>::from_value(const value&
                          euclid::detail::number(x, "m31"), euclid::detail::number(x, "m32")}};
 }
 } // namespace cel
-#endif

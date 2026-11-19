@@ -7,11 +7,11 @@ last_accessed: 2026-11-18T17:11:23Z
 last_reinforced: 2026-11-18T17:11:23Z
 access_count: 2
 sources:
+  - "src/geometry.cpp:19"
+  - "src/geometry.cpp:21"
   - "src/geometry.cpp:26"
-  - "src/geometry.cpp:28"
-  - "src/geometry.cpp:33"
-  - "src/geometry.cpp:38"
-  - "src/geometry.cpp:43"
+  - "src/geometry.cpp:31"
+  - "src/geometry.cpp:36"
   - "tests/euclid_test.cpp:344"
   - "tests/euclid_test.cpp:487"
 relationships:

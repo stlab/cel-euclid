@@ -6,6 +6,13 @@
 #include <cmath>
 #include <string_view>
 
+namespace cel::euclid {
+/// Registers the non-transform geometry operation signatures.
+void install_geometry(op_lookup& lookup);
+/// Registers affine and checked geometry operation signatures.
+void install_transforms(op_lookup& lookup);
+} // namespace cel::euclid
+
 namespace cel::euclid::detail {
 /// Identifies a named callable.
 template <class F>

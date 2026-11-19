@@ -8,8 +8,8 @@ last_reinforced: 2026-11-18T17:08:48Z
 access_count: 1
 sources:
   - "tests/euclid_test.cpp:53"
-  - "src/records.hpp:20"
-  - "src/records.hpp:39"
+  - "src/records.cpp:18"
+  - "src/records.cpp:37"
   - "docs/reference.md:23"
 relationships:
   - type: relates_to

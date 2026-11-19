@@ -18,7 +18,7 @@ cpp_library_setup(
     DESCRIPTION "CEL Euclid geometry"
     NAMESPACE cel
     HEADERS euclid.hpp
-    SOURCES euclid.cpp geometry.cpp transforms.cpp
+    SOURCES euclid.cpp geometry.cpp records.cpp transforms.cpp
     TESTS euclid_test.cpp transforms_test.cpp ${floating_point_tests}
     EXAMPLES example.cpp
     LICENSE_FILES licenses/GLM-LICENSE.txt licenses/CPM-MIT.txt
