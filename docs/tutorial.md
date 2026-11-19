@@ -15,8 +15,9 @@ target_link_libraries(YOUR_TARGET PRIVATE cel::euclid)
 ```
 
 Replace `YOUR_TARGET` with your executable target. Set `CMAKE_PREFIX_PATH` to
-the installation prefix when configuring the consuming project. The parser
-and runtime are transitive dependencies; no separate runtime link is needed.
+the installation prefixes for `cel-euclid` and its dependencies when configuring
+the consuming project. The parser and runtime are transitive link dependencies;
+no separate runtime link is needed.
 
 ## Compile and execute expressions
 

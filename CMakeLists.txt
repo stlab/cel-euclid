@@ -6,17 +6,7 @@ include("${cpp-library_SOURCE_DIR}/cpp-library.cmake")
 cpp_library_enable_dependency_tracking()
 
 project(euclid LANGUAGES CXX)
-if(PROJECT_IS_TOP_LEVEL)
-    include(CTest)
-endif()
-option(CEL_INSTALL "Enable installation for CEL libraries" ${PROJECT_IS_TOP_LEVEL})
-
-# Select the newer runtime before the parser's transitive dependency.
-CPMAddPackage("gh:stlab/cel-runtime@1.1.2")
-CPMAddPackage("gh:stlab/cel-parser@1.1.0")
-CPMAddPackage(NAME glm GITHUB_REPOSITORY g-truc/glm
-    VERSION 1.0.3 GIT_TAG 1.0.3
-    OPTIONS "GLM_BUILD_INSTALL ${CEL_INSTALL}")
+include(CTest)
 
 if(MSVC)
     set(floating_point_tests fast_math_fail.cpp)
@@ -37,6 +27,16 @@ cpp_library_setup(
     DOCS_OPTIONS
         "USE_MDFILE_AS_MAINPAGE = ${CMAKE_CURRENT_SOURCE_DIR}/README.md"
 )
+# Workaround until stlab/cpp-library#58 is resolved: add dependencies after
+# setup so CEL_INSTALL defaults to top-level, and register GLM's export set.
+# Select the direct runtime before the parser's transitive dependency.
+CPMAddPackage("gh:stlab/cel-runtime@1.1.2")
+CPMAddPackage("gh:stlab/cel-parser@1.1.1")
+CPMAddPackage(
+    URI "gh:g-truc/glm@1.0.3#8d1fd52e5ab5590e2c81768ace50c72bae28f2ed"
+    OPTIONS "GLM_BUILD_INSTALL ${CEL_INSTALL}"
+)
+
 target_link_libraries(euclid PUBLIC cel::parser cel::runtime glm::glm)
 if(MSVC)
     target_compile_options(euclid PRIVATE /fp:strict)

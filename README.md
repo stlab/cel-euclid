@@ -14,9 +14,11 @@ cmake --build build --target docs
 
 The documentation target requires Doxygen 1.13.1 or later. To install, run
 `cmake --install build --prefix /PATH/TO/PREFIX`, replacing the prefix with
-your installation directory. Consumers use `find_package(cel-euclid CONFIG
-REQUIRED)`, link `cel::euclid`, and include `<cel/euclid.hpp>`. The target
-supplies the parser and runtime dependencies.
+your installation directory. Install compatible `cel-parser`, `cel-runtime`,
+and GLM packages separately, and make their prefixes discoverable through
+`CMAKE_PREFIX_PATH` when configuring consumers. Consumers use
+`find_package(cel-euclid CONFIG REQUIRED)`, link `cel::euclid`, and include
+`<cel/euclid.hpp>`. The target supplies the dependency links.
 
 See the [tutorial](docs/tutorial.md) for a runnable example and the
 [reference](docs/reference.md) for schemas, operations, and checked errors.

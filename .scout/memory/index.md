@@ -6,6 +6,7 @@
 - [[knowledge/architecture-overview.md|Architecture Overview]] (project, 0.80) `architecture` `parser` `runtime` `geometry` `glm`
 - [[knowledge/checked-operations-preserve-evaluation-source-locations.md|Checked operations preserve evaluation source locations]] (pattern, 0.80) `checked-operations` `source-span` `runtime-error` `evaluation` `geometry`
 - [[knowledge/floating-point-parity-constrains-both-library-and-consumers.md|Floating-point parity constrains both library and consumers]] (decision, 0.80) `floating-point` `fast-math` `finite-math` `fma` `rust-parity`
+- [[knowledge/glm-export-set-is-required-even-when-its-install-is-excluded.md|GLM export set is required even when its install is excluded]] (discovery, 0.70) `cmake` `glm` `cpm` `installation`
 - [[knowledge/inverse-distinguishes-exact-zero-from-coefficient-underflow.md|Inverse distinguishes exact zero from coefficient underflow]] (discovery, 0.80) `inverse` `underflow` `cofactor` `binary64` `transform2d`
 - [[knowledge/keep-euclid-tests-independent-of-cel-std.md|Keep Euclid tests independent of cel-std]] (decision, 0.95) `cmake` `dependency-tracking` `parser` `cpp-library` `cel-std`
 - [[knowledge/nominal-record-adapters-bridge-native-carriers-and-cel.md|Nominal record adapters bridge native carriers and CEL]] (pattern, 0.80) `record-adapter` `nominal-record` `schema` `parser` `runtime`
