@@ -68,9 +68,7 @@ void install_geometry(op_lookup& l) {
     add<bool, box2d>(l, "is_finite",
                      [](auto a) { return finite(a.min.value) && finite(a.max.value); });
     add<bool, angle>(l, "is_finite", [](auto a) { return std::isfinite(a.radians); });
-    add<bool, transform2d>(l, "is_finite", [](auto a) {
-        return finite(a.value[0]) && finite(a.value[1]) && finite(a.value[2]);
-    });
+    add<bool, transform2d>(l, "is_finite", [](auto a) { return finite(a); });
 
     add<point2d, point2d, vector2d>(
         l, "+", [](auto a, auto b) { return point2d{a.value + b.value}; }, false);

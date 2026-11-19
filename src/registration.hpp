@@ -18,6 +18,10 @@ void add(op_lookup& lookup, std::string_view name, F operation, bool named = tru
 }
 /// Returns whether both components are finite.
 inline bool finite(glm::dvec2 v) { return std::isfinite(v.x) && std::isfinite(v.y); }
+/// Returns whether every matrix coefficient is finite.
+inline bool finite(transform2d t) {
+    return finite(t.value[0]) && finite(t.value[1]) && finite(t.value[2]);
+}
 } // namespace cel::euclid::detail
 
 #endif

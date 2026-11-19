@@ -36,13 +36,6 @@ void checked(op_lookup& lookup, std::string_view name, F operation) {
         });
     lookup.register_function(name, marker<F>{});
 }
-/// Returns whether every matrix coefficient is finite.
-bool finite(transform2d t) {
-    for (int i = 0; i != 3; ++i)
-        for (int j = 0; j != 2; ++j)
-            if (!std::isfinite(t.value[i][j])) return false;
-    return true;
-}
 /// Returns the Euclid determinant.
 double determinant(transform2d t) {
     auto m = t.value;
