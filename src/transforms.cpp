@@ -11,17 +11,13 @@
 #include <string>
 #include <string_view>
 
+#include "registration.hpp"
+
 namespace cel::euclid {
 namespace {
-/// Identifies a named callable.
-template <class F>
-struct marker {};
-/// Registers one exact geometry signature.
-template <class R, class... A, class F>
-void add(op_lookup& lookup, std::string_view name, F operation) {
-    lookup.register_op<R, A...>(name, operation);
-    lookup.register_function(name, marker<F>{});
-}
+using detail::add;
+using detail::finite;
+using detail::marker;
 /// Registers a checked operation, preserving its source location in errors.
 template <class R, class... A, class F>
 void checked(op_lookup& lookup, std::string_view name, F operation) {
@@ -47,8 +43,6 @@ bool finite(transform2d t) {
             if (!std::isfinite(t.value[i][j])) return false;
     return true;
 }
-/// Returns whether both components are finite.
-bool finite(glm::dvec2 v) { return std::isfinite(v.x) && std::isfinite(v.y); }
 /// Returns the Euclid determinant.
 double determinant(transform2d t) {
     auto m = t.value;
