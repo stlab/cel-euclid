@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: BSL-1.0
 #include <cel/euclid.hpp>
 #include <cel/parser/compiler.hpp>
-#include <cel/std.hpp>
 #include <cmath>
 #include <limits>
 #include <string>
@@ -13,7 +12,6 @@ namespace {
 /// Compiles and evaluates an expression with the complete geometry library.
 cel::value evaluate(std::string_view expression) {
     cel::op_lookup lookup;
-    cel::stdlib::install(lookup);
     cel::euclid::install(lookup);
     cel::parser parser(std::move(lookup));
     cel::raw_stack stack;
@@ -22,7 +20,6 @@ cel::value evaluate(std::string_view expression) {
 /// Returns whether a compiled expression reports a source-located evaluation error.
 bool evaluation_error(std::string_view expression, std::string_view operation) {
     cel::op_lookup lookup;
-    cel::stdlib::install(lookup);
     cel::euclid::install(lookup);
     cel::parser parser(std::move(lookup));
     auto program = parser.parse_str(expression);
@@ -318,7 +315,6 @@ TEST_CASE("remaining_transform_signatures_support_both_call_forms") {
         {"normalize", "Vector2D {x: 3.0, y: 4.0}", "Vector2D {x: 3.0, y: 4.0}",
          "Vector2D {x: 0.6, y: 0.8}"}};
     cel::op_lookup lookup;
-    cel::stdlib::install(lookup);
     cel::euclid::install(lookup);
     cel::parser parser(std::move(lookup));
     for (const auto& c : cases) {

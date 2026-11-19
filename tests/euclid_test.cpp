@@ -3,7 +3,6 @@
 #include <array>
 #include <cel/euclid.hpp>
 #include <cel/parser/compiler.hpp>
-#include <cel/std.hpp>
 #include <cmath>
 #include <string>
 #include <string_view>
@@ -19,16 +18,16 @@ cel::value evaluate(cel::op_lookup lookup, std::string_view expression) {
     return parser.parse_str(expression).execute(stack, {});
 }
 
-/// Installs geometry and optionally the scalar library first.
-cel::op_lookup installed(bool scalar_first = false) {
+/// Installs the geometry library.
+cel::op_lookup installed() {
     cel::op_lookup lookup;
-    if (scalar_first) cel::stdlib::install(lookup);
     cel::euclid::install(lookup);
-    if (!scalar_first) cel::stdlib::install(lookup);
     return lookup;
 }
 
 struct mark_function {};
+struct scalar_min_function {};
+struct scalar_max_function {};
 } // namespace
 
 TEST_CASE("record_schemas_match_rust") {
@@ -108,18 +107,36 @@ TEST_CASE("rect_and_box_boundaries_match_rust") {
             .as<bool>());
 }
 
-TEST_CASE("geometry_min_max_coexist_with_scalar_min_max") {
+TEST_CASE("geometry_min_max_coexist_with_scalar_overloads_in_either_order") {
     for (bool scalar_first : {false, true}) {
-        CHECK(evaluate(installed(scalar_first), "min(3.0, 5.0)").as<double>() == 3.0);
-        CHECK(evaluate(installed(scalar_first), "max(3.0, 5.0)").as<double>() == 5.0);
-        CHECK(evaluate(installed(scalar_first), "Box2D {min: Point2D {x: 1.0, y: 2.0}, "
-                                                "max: Point2D {x: 5.0, y: 6.0}}.min().x")
+        cel::op_lookup lookup;
+        auto install_scalars = [&lookup] {
+            lookup.register_op<double, double, double>(
+                "min", [](double x, double y) { return std::fmin(x, y); });
+            lookup.register_function("min", scalar_min_function{});
+            lookup.register_op<double, double, double>(
+                "max", [](double x, double y) { return std::fmax(x, y); });
+            lookup.register_function("max", scalar_max_function{});
+        };
+        if (scalar_first) install_scalars();
+        cel::euclid::install(lookup);
+        if (!scalar_first) install_scalars();
+
+        cel::parser parser(std::move(lookup));
+        cel::raw_stack stack;
+        auto evaluate = [&parser, &stack](std::string_view expression) {
+            return parser.parse_str(expression).execute(stack, {});
+        };
+        CHECK(evaluate("min(3.0, 5.0)").as<double>() == 3.0);
+        CHECK(evaluate("max(3.0, 5.0)").as<double>() == 5.0);
+        CHECK(evaluate("Box2D {min: Point2D {x: 1.0, y: 2.0}, "
+                       "max: Point2D {x: 5.0, y: 6.0}}.min().x")
                   .as<double>() == 1.0);
-        CHECK(evaluate(installed(scalar_first), "Box2D {min: Point2D {x: 1.0, y: 2.0}, "
-                                                "max: Point2D {x: 5.0, y: 6.0}}.max.y")
+        CHECK(evaluate("Box2D {min: Point2D {x: 1.0, y: 2.0}, "
+                       "max: Point2D {x: 5.0, y: 6.0}}.max.y")
                   .as<double>() == 6.0);
-        CHECK(evaluate(installed(scalar_first), "max(Box2D {min: Point2D {x: 1.0, y: 2.0}, "
-                                                "max: Point2D {x: 5.0, y: 6.0}}).y")
+        CHECK(evaluate("max(Box2D {min: Point2D {x: 1.0, y: 2.0}, "
+                       "max: Point2D {x: 5.0, y: 6.0}}).y")
                   .as<double>() == 6.0);
     }
 }
