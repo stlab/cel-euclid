@@ -1,0 +1,24 @@
+---
+title: "GLM export set is required even when its install is excluded"
+entity_type: discovery
+confidence: 0.70
+created: 2026-11-19T06:35:11Z
+last_accessed: 2026-11-19T06:35:11Z
+last_reinforced: 2026-11-19T06:35:11Z
+access_count: 1
+sources:
+  - "CMakeLists.txt:29-38"
+  - "CMakeLists.txt:40"
+  - "README.md:16-21"
+tags: ["cmake", "glm", "cpm", "installation"]
+tier: knowledge
+votes_up: 1
+votes_down: 1
+last_voted: 2026-11-19T06:51:39Z
+---
+
+# GLM export set is required even when its install is excluded
+
+Keep `GLM_BUILD_INSTALL` tied to `CEL_INSTALL` in the GLM CPM declaration. Euclid publicly links `glm::glm`, and CMake cannot generate Euclid's install export unless the locally fetched GLM target belongs to an export set. GLM creates that export set when `GLM_BUILD_INSTALL` is enabled. CPM's URI form excludes the GLM subdirectory from the parent install, so consumers must provide GLM separately even when its export set is registered.
+
+This is a temporary workaround for stlab/cpp-library#58, tracked by cel-euclid#3. The dependencies come after `cpp_library_setup()` so that cel-euclid declares `CEL_INSTALL` first (default `PROJECT_IS_TOP_LEVEL`); before setup, the nested cel-runtime declares it with default `OFF` and the generated CI install check fails.
