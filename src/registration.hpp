@@ -14,7 +14,11 @@ void install_transforms(op_lookup& lookup);
 } // namespace cel::euclid
 
 namespace cel::euclid::detail {
-/// Identifies a named callable.
+/// Identifies a named callable by its callable type `F`.
+///
+/// cel-parser binds each marker type to a single name, so registering two names whose
+/// callables share a type throws `std::invalid_argument` at install. Wrap a function
+/// pointer in a lambda if its signature matches another named function pointer.
 template <class F>
 struct marker {};
 /// Registers one exact geometry signature, and also as a named callable if `named`.
