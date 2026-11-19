@@ -8,18 +8,12 @@ last_reinforced: 2026-11-19T04:45:31Z
 access_count: 5
 sources:
   - "include/cel/euclid.hpp:7"
-  - "CMakeLists.txt:26"
-  - "CMakeLists.txt:47"
-  - "CMakeLists.txt:61"
-  - "docs/reference.md:8"
-  - "tests/euclid_test.cpp:84"
-  - "tests/transforms_test.cpp:127"
   - "CMakeLists.txt:21"
-  - "CMakeLists.txt:40"
-  - "CMakeLists.txt:49"
-  - "tests/euclid_test.cpp:83"
   - "CMakeLists.txt:41"
   - "CMakeLists.txt:46"
+  - "docs/reference.md:8"
+  - "tests/euclid_test.cpp:83"
+  - "tests/transforms_test.cpp:127"
 relationships:
   - type: extends
     target: "Architecture Overview"

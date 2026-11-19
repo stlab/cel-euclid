@@ -11,10 +11,8 @@ sources:
   - "src/geometry.cpp:52"
   - "src/transforms.cpp:21"
   - "src/transforms.cpp:27"
-  - "tests/euclid_test.cpp:111"
-  - "tests/euclid_test.cpp:160"
-  - "docs/reference.md:40"
   - "tests/euclid_test.cpp:110"
+  - "docs/reference.md:40"
 relationships:
   - type: extends
     target: "Architecture Overview"
