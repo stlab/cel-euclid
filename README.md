@@ -6,14 +6,20 @@ CEL parser. It requires C++20 and binary64 `double`.
 To build and test the library:
 
 ```sh
-cmake -S . -B build -DBUILD_TESTING=ON -DBUILD_DOCS=ON -DCEL_INSTALL=ON
-cmake --build build --parallel
-ctest --test-dir build --output-on-failure
-cmake --build build --target docs
+cmake --preset test
+cmake --build --preset test
+ctest --preset test
 ```
 
-The documentation target requires Doxygen 1.13.1 or later. To install, run
-`cmake --install build --prefix /PATH/TO/PREFIX`, replacing the prefix with
+The build fetches cpp-library 6.2.0, cel-runtime 1.1.3, cel-parser 1.1.2,
+and GLM 1.0.3. Public contract tests remain in `tests/`; the generated
+in-source runner has no test cases. Generated tests have 120-second timeouts.
+
+To build documentation, run `cmake --preset docs`, then
+`cmake --build --preset docs`. This requires Doxygen 1.13.1 or later.
+
+Installation is opt-in: configure and build with the `install` preset, then run
+`cmake --install build/install --prefix /PATH/TO/PREFIX`, replacing the prefix with
 your installation directory. Install compatible `cel-parser`, `cel-runtime`,
 and GLM packages separately, and make their prefixes discoverable through
 `CMAKE_PREFIX_PATH` when configuring consumers. Consumers use
