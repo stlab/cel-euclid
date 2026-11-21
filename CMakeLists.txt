@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 
 include(cmake/CPM.cmake)
-CPMAddPackage("gh:stlab/cpp-library@6.1.0")
+CPMAddPackage("gh:stlab/cpp-library@6.2.0")
 include("${cpp-library_SOURCE_DIR}/cpp-library.cmake")
 cpp_library_enable_dependency_tracking()
 
@@ -30,14 +30,27 @@ cpp_library_setup(
 # Workaround until stlab/cpp-library#58 is resolved: add dependencies after
 # setup so CEL_INSTALL defaults to top-level, and register GLM's export set.
 # Select the direct runtime before the parser's transitive dependency.
-CPMAddPackage("gh:stlab/cel-runtime@1.1.2")
-CPMAddPackage("gh:stlab/cel-parser@1.1.1")
+CPMAddPackage("gh:stlab/cel-runtime@1.1.3")
+CPMAddPackage("gh:stlab/cel-parser@1.1.2")
 CPMAddPackage(
     URI "gh:g-truc/glm@1.0.3#8d1fd52e5ab5590e2c81768ace50c72bae28f2ed"
     OPTIONS "GLM_BUILD_INSTALL ${CEL_INSTALL}"
 )
 
 target_link_libraries(euclid PUBLIC cel::parser cel::runtime glm::glm)
+
+# Public contract tests use the production library, not private static-test requirements.
+foreach(test_target IN ITEMS euclid_test transforms_test fast_math_fail finite_math_fail)
+    if(TARGET "${test_target}")
+        get_target_property(test_links "${test_target}" LINK_LIBRARIES)
+        list(TRANSFORM test_links REPLACE "^euclid_static_tests$" "cel::euclid")
+        set_property(TARGET "${test_target}" PROPERTY LINK_LIBRARIES "${test_links}")
+        get_target_property(test_includes "${test_target}" INCLUDE_DIRECTORIES)
+        list(REMOVE_ITEM test_includes "${CMAKE_CURRENT_SOURCE_DIR}/src")
+        set_property(TARGET "${test_target}" PROPERTY INCLUDE_DIRECTORIES "${test_includes}")
+    endif()
+endforeach()
+
 if(MSVC)
     target_compile_options(euclid PRIVATE /fp:strict)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "^(AppleClang|Clang|GNU)$")
