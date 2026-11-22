@@ -11,7 +11,7 @@ cmake --build --preset test
 ctest --preset test
 ```
 
-The build fetches cpp-library 6.2.0, cel-runtime 1.1.3, cel-parser 1.1.2,
+The build fetches cpp-library 7.0.0, cel-runtime 1.1.4, cel-parser 1.1.3,
 and GLM 1.0.3. Public contract tests remain in `tests/`; the generated
 in-source runner has no test cases. Generated tests have 120-second timeouts.
 
